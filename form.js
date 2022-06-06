@@ -1,28 +1,40 @@
 class Form {
-  #outputPath;
   #fields;
   #currentField;
 
-  constructor(outputPath) {
-    this.#outputPath = outputPath;
+  constructor() {
     this.#fields = [];
     this.#currentField = -1;
   }
 
-  addField(description) {
+  addField(description, type) {
     const field = {
-      description: description,
-      input: null
+      description, type, input: null
     }
     this.#fields.push(field);
   }
 
-  nextQuestion() {
-    this.#currentField += 1;
-    return this.#fields[this.#currentField];
+  nextFieldDescription() {
+    this.#currentField++;
+
+    const nextField = this.#currentField();
+    if (nextField) {
+      return nextField.description;
+    }
+  }
+
+  #currentField() {
+    return this.#fields[this.#currentField]
   }
 
   registerInput(input) {
-    this.#fields[this.#currentField].input = input;
+    const currentField = this.#currentField();
+    if (currentField.type === 'array') {
+      currentField.input = input.slice(',');
+      return;
+    }
+    currentField.input = input;
   }
 }
+
+exports.Form = Form;

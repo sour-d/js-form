@@ -9,17 +9,17 @@ class Form {
     this.#formData = {};
   }
 
-  incrementCurrentFieldIndex() {
+  #currentField() {
+    return this.#fields[this.#currentFieldIndex];
+  }
+
+  #incrementCurrentFieldIndex() {
     this.#currentFieldIndex++;
   }
 
   addField(name, type, description, validator) {
     const input = null;
     this.#fields.push({ name, description, type, validator, input });
-  }
-
-  #currentField() {
-    return this.#fields[this.#currentFieldIndex];
   }
 
   currentFieldDescription() {
@@ -45,7 +45,7 @@ class Form {
     } else {
       this.#formData[currentField.name] = parsedInput;
     }
-    this.incrementCurrentFieldIndex();
+    this.#incrementCurrentFieldIndex();
   }
 
   #parseInput(input) {
@@ -61,10 +61,6 @@ class Form {
   }
 
   toJSON() {
-    // const formData = {};
-    // for (const key in this.#formData) {
-    //   formData[key] = this.#formData[key].join('\n');
-    // }
     return JSON.stringify(this.#formData);
   }
 }

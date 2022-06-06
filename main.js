@@ -3,47 +3,44 @@ const fs = require('fs');
 
 const nameValidator = (name) => {
   const isValid = /^[\S ]+$/.test(name) && name.length > 4;
-  if (!isValid) {
-    console.error('Invalid Input !!');
-  }
-  return isValid;
+  return assertResult(isValid);
 };
 
 const dobValidator = (dob) => {
   const isValid = /^[\d]+\-[\d]+\-[\d]+$/.test(dob);
-  if (!isValid) {
-    console.error('Invalid Input !!');
-  }
-  return isValid;
+  return assertResult(isValid);
 };
 
 const hobbiesValidator = (hobbies) => {
   const isValid = hobbies.length > 0;
-  if (!isValid) {
-    console.error('Invalid Input !!');
-  }
-  return isValid;
+  return assertResult(isValid);
 };
 
 const phValidator = (phone) => {
   const isValid = phone.length > 9 && /^[\d]+$/.test(phone);
-  if (!isValid) {
-    console.error('Invalid Input !!');
-  }
-  return isValid;
+  return assertResult(isValid);
 };
 
 const addressValidator = (address) => {
   const isValid = address.length > 0;
+  return assertResult(isValid);
+};
+
+const assertResult = (isValid) => {
   if (!isValid) {
     console.error('Invalid Input !!');
   }
   return isValid;
-};
-
+}
 
 const storeFormData = (form) => {
   fs.writeFileSync('./formData.json', form.toJSON(), 'utf8');
+};
+
+const exitProcess = (form) => {
+  storeFormData(form);
+  console.log('Thank you');
+  process.exit(0);
 };
 
 const readData = (form) => {
@@ -55,9 +52,7 @@ const readData = (form) => {
   process.stdin.on('data', (input) => {
     form.registerInput(input.trim());
     if (!form.hasRemainingField()) {
-      storeFormData(form);
-      console.log('Thank you');
-      process.exit(0);
+      exitProcess(form);
     }
     desc = form.currentFieldDescription();
     console.log(desc);

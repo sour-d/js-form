@@ -1,10 +1,12 @@
 class Form {
   #fields;
   #currentFieldIndex;
+  #formData;
 
   constructor() {
     this.#fields = [];
     this.#currentFieldIndex = 0;
+    this.#formData = {};
   }
 
   incrementCurrentFieldIndex() {
@@ -31,17 +33,27 @@ class Form {
       return;
     }
 
-    this.incrementCurrentFieldIndex();
     this.#storeInput(input);
   }
 
-  #storeInput(currentField, input) {
+  #storeInput(input) {
+    const currentField = this.#currentField();
+    const parsedInput = this.#parseInput(input);
+
+    if (this.#formData[currentField.name]) {
+      this.#formData[currentField.name] += '\n' + parsedInput;
+    } else {
+      this.#formData[currentField.name] = parsedInput;
+    }
+    this.incrementCurrentFieldIndex();
+  }
+
+  #parseInput(input) {
     const currentField = this.#currentField();
     if (currentField.type === 'array') {
-      currentField.input = input.split(',');
-      return;
+      return input.split(',');
     }
-    currentField.input = input;
+    return input;
   }
 
   hasRemainingField() {
@@ -49,12 +61,11 @@ class Form {
   }
 
   toJSON() {
-    const formData = this.#fields.map(({ name, input }) => {
-      const data = {};
-      data[name] = input;
-      return data;
-    });
-    return JSON.stringify(formData);
+    // const formData = {};
+    // for (const key in this.#formData) {
+    //   formData[key] = this.#formData[key].join('\n');
+    // }
+    return JSON.stringify(this.#formData);
   }
 }
 

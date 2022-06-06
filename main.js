@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const nameValidator = (name) => {
   const isValid = /^[\S ]+$/.test(name) && name.length > 4;
-  if (isValid) {
+  if (!isValid) {
     console.error('Invalid Input !!');
   }
   return isValid;
@@ -11,7 +11,7 @@ const nameValidator = (name) => {
 
 const dobValidator = (dob) => {
   const isValid = /^[\d]+\-[\d]+\-[\d]+$/.test(dob);
-  if (isValid) {
+  if (!isValid) {
     console.error('Invalid Input !!');
   }
   return isValid;
@@ -19,11 +19,28 @@ const dobValidator = (dob) => {
 
 const hobbiesValidator = (hobbies) => {
   const isValid = hobbies.length > 0;
-  if (isValid) {
+  if (!isValid) {
     console.error('Invalid Input !!');
   }
   return isValid;
 };
+
+const phValidator = (phone) => {
+  const isValid = phone.length > 9 && /^[\d]+$/.test(phone);
+  if (!isValid) {
+    console.error('Invalid Input !!');
+  }
+  return isValid;
+};
+
+const addressValidator = (address) => {
+  const isValid = address.length > 0;
+  if (!isValid) {
+    console.error('Invalid Input !!');
+  }
+  return isValid;
+};
+
 
 const storeFormData = (form) => {
   fs.writeFileSync('./formData.json', form.toJSON(), 'utf8');
@@ -34,6 +51,7 @@ const readData = (form) => {
 
   let desc = form.currentFieldDescription();
   console.log(desc);
+
   process.stdin.on('data', (input) => {
     form.registerInput(input.trim());
     if (!form.hasRemainingField()) {
@@ -48,9 +66,12 @@ const readData = (form) => {
 
 const main = () => {
   const form = new Form();
-  form.addField('name', 'string', 'Please Enter Your name :', nameValidator);
-  form.addField('dob', 'string', 'Please Enter Your dob :', dobValidator);
-  form.addField('hobbies', 'array', 'Please Enter Your hobbies :', hobbiesValidator);
+  form.addField('name', 'string', 'Enter Your name :', nameValidator);
+  form.addField('dob', 'string', 'Enter Your dob :', dobValidator);
+  form.addField('hobbies', 'array', 'Enter Your hobbies :', hobbiesValidator);
+  form.addField('ph_no', 'string', 'Enter Your phone number :', phValidator);
+  form.addField('address', 'string', 'Enter line 1 address :', addressValidator);
+  form.addField('address', 'string', 'Enter line 2 address :', addressValidator);
 
   readData(form);
 };

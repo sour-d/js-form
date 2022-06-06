@@ -7,40 +7,41 @@ class Form {
     this.#currentFieldIndex = 0;
   }
 
-  addField(name, type, description, validator) {
-    const input = null;
-
-    this.#fields.push({ name, description, type, validator, input });
+  incrementCurrentFieldIndex() {
+    this.#currentFieldIndex++;
   }
 
-  currentFieldDescription() {
-    const currentField = this.#currentField();
-    if (currentField) {
-      return currentField.description;
-    }
+  addField(name, type, description, validator) {
+    const input = null;
+    this.#fields.push({ name, description, type, validator, input });
   }
 
   #currentField() {
     return this.#fields[this.#currentFieldIndex];
   }
 
+  currentFieldDescription() {
+    const currentField = this.#currentField();
+    return currentField ? currentField.description : null;
+  }
+
   registerInput(input) {
     const currentField = this.#currentField();
     if (!currentField.validator(input)) {
-      console.error('Invalid Input !!');
       return;
     }
 
     this.incrementCurrentFieldIndex();
-    currentField.input = input;
-
-    if (currentField.type === 'array') {
-      currentField.input = input.split(',');
-    }
+    this.#storeInput(input);
   }
 
-  incrementCurrentFieldIndex() {
-    this.#currentFieldIndex++;
+  #storeInput(currentField, input) {
+    const currentField = this.#currentField();
+    if (currentField.type === 'array') {
+      currentField.input = input.split(',');
+      return;
+    }
+    currentField.input = input;
   }
 
   hasRemainingField() {
@@ -48,9 +49,9 @@ class Form {
   }
 
   toJSON() {
-    const formData = this.#fields.map(field => {
+    const formData = this.#fields.map(({ name, input }) => {
       const data = {};
-      data[field.name] = field['input'];
+      data[name] = input;
       return data;
     });
     return JSON.stringify(formData);

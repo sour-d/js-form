@@ -2,15 +2,27 @@ const { Form } = require('./form.js');
 const fs = require('fs');
 
 const nameValidator = (name) => {
-  return /^[\S ]+$/.test(name) && name.length > 4;
+  const isValid = /^[\S ]+$/.test(name) && name.length > 4;
+  if (isValid) {
+    console.error('Invalid Input !!');
+  }
+  return isValid;
 };
 
 const dobValidator = (dob) => {
-  return /^[\d]+\-[\d]+\-[\d]+$/.test(dob);
+  const isValid = /^[\d]+\-[\d]+\-[\d]+$/.test(dob);
+  if (isValid) {
+    console.error('Invalid Input !!');
+  }
+  return isValid;
 };
 
 const hobbiesValidator = (hobbies) => {
-  return hobbies.length > 0;
+  const isValid = hobbies.length > 0;
+  if (isValid) {
+    console.error('Invalid Input !!');
+  }
+  return isValid;
 };
 
 const storeFormData = (form) => {

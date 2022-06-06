@@ -4,22 +4,20 @@ class Form {
 
   constructor() {
     this.#fields = [];
-    this.#currentFieldIndex = -1;
+    this.#currentFieldIndex = 0;
   }
 
-  addField(name, type, description) {
+  addField(name, type, description, validator) {
     const field = {
-      name, description, type, input: null
+      name, description, type, validator, input: null
     }
     this.#fields.push(field);
   }
 
-  nextFieldDescription() {
-    this.#currentFieldIndex++;
-
-    const nextField = this.#currentField();
-    if (nextField) {
-      return nextField.description;
+  currentFieldDescription() {
+    const currentField = this.#currentField();
+    if (currentField) {
+      return currentField.description;
     }
   }
 
@@ -29,11 +27,21 @@ class Form {
 
   registerInput(input) {
     const currentField = this.#currentField();
-    if (currentField.type === 'array') {
-      currentField.input = input.split(',');
+    if (!currentField.validator(input)) {
+      console.error('Invalid Input !!');
       return;
     }
+
+    this.#currentFieldIndex++;
     currentField.input = input;
+
+    if (currentField.type === 'array') {
+      currentField.input = input.split(',');
+    }
+  }
+
+  hasRemainingField() {
+    return this.#currentFieldIndex < this.#fields.length;
   }
 
   toJSON() {

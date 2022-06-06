@@ -8,10 +8,9 @@ class Form {
   }
 
   addField(name, type, description, validator) {
-    const field = {
-      name, description, type, validator, input: null
-    }
-    this.#fields.push(field);
+    const input = null;
+
+    this.#fields.push({ name, description, type, validator, input });
   }
 
   currentFieldDescription() {
@@ -32,12 +31,16 @@ class Form {
       return;
     }
 
-    this.#currentFieldIndex++;
+    this.incrementCurrentFieldIndex();
     currentField.input = input;
 
     if (currentField.type === 'array') {
       currentField.input = input.split(',');
     }
+  }
+
+  incrementCurrentFieldIndex() {
+    this.#currentFieldIndex++;
   }
 
   hasRemainingField() {

@@ -7,9 +7,9 @@ class Form {
     this.#currentFieldIndex = -1;
   }
 
-  addField(description, type) {
+  addField(name, type, description) {
     const field = {
-      description, type, input: null
+      name, description, type, input: null
     }
     this.#fields.push(field);
   }
@@ -34,6 +34,15 @@ class Form {
       return;
     }
     currentField.input = input;
+  }
+
+  toJSON() {
+    const formData = this.#fields.map(field => {
+      const data = {};
+      data[field.name] = field['input'];
+      return data;
+    });
+    return JSON.stringify(formData);
   }
 }
 

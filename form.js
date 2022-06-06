@@ -1,10 +1,10 @@
 class Form {
   #fields;
-  #currentField;
+  #currentFieldIndex;
 
   constructor() {
     this.#fields = [];
-    this.#currentField = -1;
+    this.#currentFieldIndex = -1;
   }
 
   addField(description, type) {
@@ -15,7 +15,7 @@ class Form {
   }
 
   nextFieldDescription() {
-    this.#currentField++;
+    this.#currentFieldIndex++;
 
     const nextField = this.#currentField();
     if (nextField) {
@@ -24,7 +24,7 @@ class Form {
   }
 
   #currentField() {
-    return this.#fields[this.#currentField]
+    return this.#fields[this.#currentFieldIndex];
   }
 
   registerInput(input) {

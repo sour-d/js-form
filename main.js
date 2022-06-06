@@ -1,12 +1,17 @@
 const { Form } = require('./form.js');
+const fs = require('fs');
 
 const main = () => {
   const form = new Form();
-  form.addField('Please Enter Your name :', 'string');
-  form.addField('Please Enter Your dob :', 'string');
-  form.addField('Please Enter Your hobbies :', 'array');
+  form.addField('name', 'string', 'Please Enter Your name :');
+  form.addField('dob', 'string', 'Please Enter Your dob :');
+  form.addField('hobbies', 'array', 'Please Enter Your hobbies :');
 
   readData(form);
+}
+
+const storeFormData = (form) => {
+  fs.writeFileSync('./formData.json', form.toJSON(), 'utf8');
 }
 
 const readData = (form) => {
@@ -18,6 +23,7 @@ const readData = (form) => {
     form.registerInput(input);
     field = form.nextFieldDescription();
     if (!field) {
+      storeFormData(form);
       process.exit(0);
     }
     console.log(field);

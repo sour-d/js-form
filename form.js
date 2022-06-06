@@ -30,7 +30,7 @@ class Form {
   registerInput(input) {
     const currentField = this.#currentField();
     if (currentField.type === 'array') {
-      currentField.input = input.slice(',');
+      currentField.input = input.split(',');
       return;
     }
     currentField.input = input;

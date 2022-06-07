@@ -1,5 +1,6 @@
 const { Form } = require('./form.js');
 const fs = require('fs');
+const { text } = require('stream/consumers');
 
 const nameValidator = (name) => {
   const isValid = /^[\S ]+$/.test(name) && name.length > 4;
@@ -43,6 +44,10 @@ const exitProcess = (form) => {
   process.exit(0);
 };
 
+const parseString = text => text
+const parseArray = text => text.split(',');
+const parseAddress = text => [text];
+
 const readData = (form) => {
   process.stdin.setEncoding('utf8');
 
@@ -61,12 +66,12 @@ const readData = (form) => {
 
 const main = () => {
   const form = new Form();
-  form.addField('name', 'string', 'Enter Your name :', nameValidator);
-  form.addField('dob', 'string', 'Enter Your dob :', dobValidator);
-  form.addField('hobbies', 'array', 'Enter Your hobbies :', hobbiesValidator);
-  form.addField('ph_no', 'string', 'Enter Your phone number :', phValidator);
-  form.addField('address', 'string', 'Enter line 1 address :', addressValidator);
-  form.addField('address', 'string', 'Enter line 2 address :', addressValidator);
+  form.addField('name', 'Enter Your name :', nameValidator, parseString);
+  form.addField('dob', 'Enter Your dob :', dobValidator, parseString);
+  form.addField('hobbies', 'Enter Your hobbies :', hobbiesValidator, parseArray);
+  form.addField('ph_no', 'Enter Your phone number :', phValidator, parseString);
+  form.addField('address', 'Enter line 1 address :', addressValidator, parseAddress);
+  form.addField('address', 'Enter line 2 address :', addressValidator, parseAddress);
 
   readData(form);
 };

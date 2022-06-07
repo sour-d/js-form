@@ -17,9 +17,8 @@ class Form {
     this.#currentFieldIndex++;
   }
 
-  addField(name, type, description, validator) {
-    const input = null;
-    this.#fields.push({ name, description, type, validator, input });
+  addField(name, description, validator, parser) {
+    this.#fields.push({ name, description, parser, validator });
   }
 
   currentFieldDescription() {
@@ -38,22 +37,16 @@ class Form {
 
   #storeInput(input) {
     const currentField = this.#currentField();
-    const parsedInput = this.#parseInput(input);
+    const parsedInput = currentField.parser(input);
+    currentField.input = parsedInput;
 
-    if (this.#formData[currentField.name]) {
-      this.#formData[currentField.name] += '\n' + parsedInput;
+    const oldData = this.#formData[currentField.name];
+    if (oldData) {
+      this.#formData[currentField.name] = oldData.concat(parsedInput);
     } else {
       this.#formData[currentField.name] = parsedInput;
     }
     this.#incrementCurrentFieldIndex();
-  }
-
-  #parseInput(input) {
-    const currentField = this.#currentField();
-    if (currentField.type === 'array') {
-      return input.split(',');
-    }
-    return input;
   }
 
   hasRemainingField() {

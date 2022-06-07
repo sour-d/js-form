@@ -1,38 +1,41 @@
 const { Form } = require('./form.js');
 const fs = require('fs');
-const { text } = require('stream/consumers');
 
 const nameValidator = (name) => {
-  const isValid = /^[\S ]+$/.test(name) && name.length > 4;
-  return assertResult(isValid);
+  const result = /^[\S ]+$/.test(name) && name.length > 4;
+  return assert(result);
 };
 
-const dobValidator = (dob) => {
-  const isValid = /^[\d]+\-[\d]+\-[\d]+$/.test(dob);
-  return assertResult(isValid);
+const dateValidator = (date) => {
+  const result = /^\d{4}\-\d{2}\-\d{2}$/.test(date);
+  return assert(result);
 };
 
 const hobbiesValidator = (hobbies) => {
-  const isValid = hobbies.length > 0;
-  return assertResult(isValid);
+  const result = hobbies.length > 0;
+  return assert(result);
 };
 
-const phValidator = (phone) => {
-  const isValid = phone.length > 9 && /^[\d]+$/.test(phone);
-  return assertResult(isValid);
+const phNoValidator = (phone) => {
+  const result = phone.length > 9 && /^[\d]+$/.test(phone);
+  return assert(result);
 };
 
 const addressValidator = (address) => {
-  const isValid = address.length > 0;
-  return assertResult(isValid);
+  const result = address.length > 0;
+  return assert(result);
 };
 
-const assertResult = (isValid) => {
-  if (!isValid) {
+const assert = (result) => {
+  if (!result) {
     console.error('Invalid Input !!');
   }
-  return isValid;
-}
+  return result;
+};
+
+const parseString = text => text
+const parseArray = text => text.split(',');
+const parseAddress = text => [text];
 
 const storeFormData = (form) => {
   fs.writeFileSync('./formData.json', form.toJSON(), 'utf8');
@@ -44,35 +47,37 @@ const exitProcess = (form) => {
   process.exit(0);
 };
 
-const parseString = text => text
-const parseArray = text => text.split(',');
-const parseAddress = text => [text];
+const displayQuestion = form => {
+  if (!form.hasRemainingField()) {
+    exitProcess(form);
+  }
+  console.log(form.currentFieldDescription());
+};
 
 const readData = (form) => {
   process.stdin.setEncoding('utf8');
 
-  let desc = form.currentFieldDescription();
-  console.log(desc);
-
+  displayQuestion(form);
   process.stdin.on('data', (input) => {
     form.registerInput(input.trim());
-    if (!form.hasRemainingField()) {
-      exitProcess(form);
-    }
-    desc = form.currentFieldDescription();
-    console.log(desc);
+    displayQuestion(form);
   });
 };
 
-const main = () => {
+const createForm = () => {
   const form = new Form();
   form.addField('name', 'Enter Your name :', nameValidator, parseString);
-  form.addField('dob', 'Enter Your dob :', dobValidator, parseString);
+  form.addField('dob', 'Enter Your dob :', dateValidator, parseString);
   form.addField('hobbies', 'Enter Your hobbies :', hobbiesValidator, parseArray);
-  form.addField('ph_no', 'Enter Your phone number :', phValidator, parseString);
+  form.addField('ph_no', 'Enter Your phone number :', phNoValidator, parseString);
   form.addField('address', 'Enter line 1 address :', addressValidator, parseAddress);
   form.addField('address', 'Enter line 2 address :', addressValidator, parseAddress);
 
+  return form;
+};
+
+const main = () => {
+  const form = createForm();
   readData(form);
 };
 

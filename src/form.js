@@ -1,11 +1,11 @@
-const { Field } = require('./fields.js');
+// const { Field } = require('./fields.js');
 
 class Form {
   #fields;
   #currentFieldIndex;
 
-  constructor() {
-    this.#fields = [];
+  constructor(...fields) {
+    this.#fields = fields;
     this.#currentFieldIndex = 0;
   }
 
@@ -13,20 +13,18 @@ class Form {
     return this.#fields[this.#currentFieldIndex];
   }
 
-  addField(name, description, validator, parser) {
-    this.#fields.push(new Field(name, description, validator, parser));
-  }
-
   currentFieldLabel() {
     const currentField = this.#currentField();
     return currentField.getLabel();
   }
 
-  registerInput(response) {
+  registerResponse(response) {
     const currentField = this.#currentField();
     if (currentField.validate(response)) {
       currentField.storeResponse(response);
-      this.#currentFieldIndex++;
+      if (currentField.isFilled()) {
+        this.#currentFieldIndex++;
+      }
     }
   }
 

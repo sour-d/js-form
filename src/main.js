@@ -1,5 +1,7 @@
 const { Form } = require("./form.js");
 const fs = require("fs");
+const { Field } = require("./fields.js");
+const { multiLineField } = require("./multiLineField.js");
 
 const nameValidator = (name) => {
   const result = /^[\S ]+$/.test(name) && name.length > 4;
@@ -33,12 +35,11 @@ const assert = (result) => {
   return result;
 };
 
-const parseString = (text) => text;
-const parseArray = (text) => text.split(",");
-const parseAddress = (text) => [text];
+const identity = (text) => text;
+const split = (text) => text.split(",");
+const join = (text) => text.join('\n');
 
 const storeFormData = (form) => {
-  console.log(JSON.stringify(form.getAllResponses()));
   fs.writeFileSync(
     './formData.json', JSON.stringify(form.getAllResponses()), 'utf8'
   );
@@ -62,40 +63,29 @@ const readData = (form) => {
 
   displayQuestion(form);
   process.stdin.on("data", (input) => {
-    form.registerInput(input.trim());
+    form.registerResponse(input.trim());
     displayQuestion(form);
   });
 };
 
 const createForm = () => {
-  const form = new Form();
-  form.addField("name", "Enter Your name :", nameValidator, parseString);
-  form.addField("dob", "Enter Your dob :", dateValidator, parseString);
-  form.addField(
-    "hobbies",
-    "Enter Your hobbies :",
-    hobbiesValidator,
-    parseArray
-  );
-  form.addField(
-    "ph_no",
-    "Enter Your phone number :",
-    phNoValidator,
-    parseString
-  );
-  form.addField(
-    "address",
-    "Enter line 1 address :",
-    addressValidator,
-    parseAddress
-  );
-  form.addField(
-    "address",
-    "Enter line 2 address :",
-    addressValidator,
-    parseAddress
+  const nameField = new Field('name', 'Enter name :', nameValidator, identity);
+  const dobField = new Field('dob', 'Enter dob :', dateValidator, identity);
+  const hobbiesField = new Field(
+    'hobbies', 'Enter hobbies :', hobbiesValidator, split
   );
 
+  const phField = new Field(
+    'phone', 'Enter phone number :', phNoValidator, identity
+  );
+
+  const addressField = new multiLineField(
+    'address',
+    ['Enter address line 1', 'Enter address line 2'],
+    addressValidator, join
+  );
+
+  const form = new Form(nameField, dobField, hobbiesField, phField, addressField);
   return form;
 };
 
